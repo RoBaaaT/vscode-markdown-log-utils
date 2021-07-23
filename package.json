@@ -10,14 +10,20 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:markdown-log-utils.helloWorld"
+        "onLanguage:markdown",
+		"onCommand:markdown-log-utils.createDaily",
+		"onCommand:markdown-log-utils.createMeeting"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "markdown-log-utils.helloWorld",
-				"title": "Hello World"
+				"command": "markdown-log-utils.createDaily",
+				"title": "Log: Create log file for today"
+			},
+			{
+				"command": "markdown-log-utils.createMeeting",
+				"title": "Log: Create log file for a meeting today"
 			}
 		]
 	},

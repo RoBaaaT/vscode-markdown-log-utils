@@ -5,21 +5,36 @@ import * as vscode from 'vscode';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "markdown-log-utils" is now active!');
+	console.log('"markdown-log-utils" is now active');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('markdown-log-utils.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from markdown-log-utils!');
-	});
+	context.subscriptions.push(vscode.commands.registerCommand('markdown-log-utils.createDaily', async () => {
+        let edit = new vscode.WorkspaceEdit();
+        let date = new Date();
+        let dateString = date.getFullYear().toString().padStart(4, '0') + '-' + date.getMonth().toString().padStart(2, '0') + '-' + date.getDay().toString().padStart(2, '0');
+        let uri = vscode.Uri.file(vscode.workspace.workspaceFolders![0].uri.fsPath + '/daily/' + dateString + '.md');
+        edit.createFile(uri, { ignoreIfExists: true });
+        let created = await vscode.workspace.applyEdit(edit);
+        if (created) {
+            let doc = await vscode.workspace.openTextDocument(uri);
+            await vscode.window.showTextDocument(doc);
+        }
+	}));
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(vscode.commands.registerCommand('markdown-log-utils.createMeeting', async () => {
+        let meetingName = await vscode.window.showInputBox({ title: 'Meeting name' });
+        if (meetingName) {
+            let edit = new vscode.WorkspaceEdit();
+            let date = new Date();
+            let dateString = date.getFullYear().toString().padStart(4, '0') + '-' + date.getMonth().toString().padStart(2, '0') + '-' + date.getDay().toString().padStart(2, '0');
+            let uri = vscode.Uri.file(vscode.workspace.workspaceFolders![0].uri.fsPath + '/meetings/' + dateString + '-' + meetingName + '.md');
+            edit.createFile(uri, { ignoreIfExists: true });
+            let created = await vscode.workspace.applyEdit(edit);
+            if (created) {
+                let doc = await vscode.workspace.openTextDocument(uri);
+                await vscode.window.showTextDocument(doc);
+            }
+        }
+	}));
 }
 
 // this method is called when your extension is deactivated
