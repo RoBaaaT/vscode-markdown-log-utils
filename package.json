@@ -1,6 +1,11 @@
 {
 	"name": "markdown-log-utils",
 	"displayName": "markdown-log-utils",
+    "publisher": "robertl",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/RoBaaaT/vscode-markdown-log-utils"
+    },
 	"description": "Utility functionality for writing a regular log (personal/professional) in Markdown format",
 	"version": "0.0.1",
 	"engines": {
