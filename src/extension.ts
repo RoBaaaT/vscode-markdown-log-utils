@@ -20,21 +20,33 @@ export function activate(context: vscode.ExtensionContext) {
         let created = await vscode.workspace.applyEdit(edit);
         if (created) {
             let doc = await vscode.workspace.openTextDocument(uri);
-            await vscode.window.showTextDocument(doc);
+            let editor = await vscode.window.showTextDocument(doc);
+            if(doc.getText() === '') {
+                let dow = new Date().toLocaleString('en-us', {  weekday: 'long' });
+                editor.edit(editBuilder => {
+                    editBuilder.insert(doc.positionAt(0), '# ' + dateString + ' (' + dow + ')\n');
+                });
+            }
         }
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('markdown-log-utils.createMeeting', async () => {
         let meetingName = await vscode.window.showInputBox({ title: 'Meeting name' });
         if (meetingName) {
+            let meetingNameFileFriendly = meetingName.split(' ').join('-');
             let edit = new vscode.WorkspaceEdit();
             let dateString = getCurrentDateString();
-            let uri = vscode.Uri.file(vscode.workspace.workspaceFolders![0].uri.fsPath + '/meetings/' + dateString + '-' + meetingName + '.md');
+            let uri = vscode.Uri.file(vscode.workspace.workspaceFolders![0].uri.fsPath + '/meetings/' + dateString + '-' + meetingNameFileFriendly + '.md');
             edit.createFile(uri, { ignoreIfExists: true });
             let created = await vscode.workspace.applyEdit(edit);
             if (created) {
                 let doc = await vscode.workspace.openTextDocument(uri);
-                await vscode.window.showTextDocument(doc);
+                let editor = await vscode.window.showTextDocument(doc);
+                if(doc.getText() === '') {
+                    editor.edit(editBuilder => {
+                        editBuilder.insert(doc.positionAt(0), '# ' + meetingName + ' (' + dateString + ')\n');
+                    });
+                }
             }
         }
 	}));
