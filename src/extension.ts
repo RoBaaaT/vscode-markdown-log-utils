@@ -58,7 +58,10 @@ export function activate(context: vscode.ExtensionContext) {
                 let dailyUri = getDailyUri(dateString);
                 let dailyDoc = await vscode.workspace.openTextDocument(dailyUri);
                 let dailyEditor = await vscode.window.showTextDocument(dailyDoc, undefined, true);
-                let refToMeeting = '[' + meetingName + '](' + path.relative(path.dirname(dailyUri.fsPath), uri.fsPath) + ')\n';
+                let relPath = path.relative(path.dirname(dailyUri.fsPath), uri.fsPath);
+                if (path.sep === '\\')
+                    relPath = relPath.split(path.sep).join('/');
+                let refToMeeting = '[' + meetingName + '](' + relPath + ')\n';
                 dailyEditor.edit(editBuilder => {
                     editBuilder.replace(dailyEditor.selection, refToMeeting);
                 });
