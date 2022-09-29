@@ -7,7 +7,7 @@
 		"url": "https://github.com/RoBaaaT/vscode-markdown-log-utils"
 	},
 	"description": "Utility functionality for writing a regular log (personal/professional) in Markdown format",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.58.0"
 	},
@@ -30,7 +30,22 @@
 				"command": "markdown-log-utils.createMeeting",
 				"title": "Log: Create log file for a meeting today"
 			}
-		]
+		],
+        "configuration": {
+            "title": "Markdown Log Utils",
+            "properties": {
+                "md-log-utils.createDaily.directory": {
+                    "type": "string",
+                    "default": ".",
+                    "description": "The directory where daily notes should be created. Defaults to the workspace root."
+                },
+                "md-log-utils.createMeeting.directory": {
+                    "type": "string",
+                    "default": ".",
+                    "description": "The directory where meeting notes should be created. Defaults to the workspace root."
+                }
+            }
+        }
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
@@ -54,7 +69,7 @@
 		"glob": "^7.1.7",
 		"mocha": "^8.4.0",
 		"typescript": "^4.3.2",
-		"vscode-test": "^1.5.2",
+		"@vscode/test-electron": "^1.5.2",
 		"ts-loader": "^9.2.2",
 		"webpack": "^5.38.1",
 		"webpack-cli": "^4.7.0"

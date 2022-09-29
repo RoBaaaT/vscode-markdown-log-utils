@@ -12,7 +12,10 @@ TODO
 
 ## Extension Settings
 
-TODO
+Name                                 | Description
+------------------------------------ | -----------
+md-log-utils.createDaily.directory   | The directory where daily notes should be created. Defaults to the workspace root.
+md-log-utils.createMeeting.directory | The directory where meeting notes should be created. Defaults to the workspace root.
 
 ## Known Issues
 

@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import path = require('path');
 import * as vscode from 'vscode';
+import { getVsCodeConfig } from './services/config';
 
 function getCurrentDateString(): string {
     let date = new Date();
@@ -9,7 +10,26 @@ function getCurrentDateString(): string {
 }
 
 function getDailyUri(dateString: string): vscode.Uri {
-    return vscode.Uri.file(vscode.workspace.workspaceFolders![0].uri.fsPath + '/daily/' + dateString + '.md');
+    const dailyNoteDirectory = vscode.Uri.file(getVsCodeConfig<string>('createDaily.directory', '.'));
+    const dailyNoteFilename = dateString + '.md';
+    if (path.posix.isAbsolute(dailyNoteDirectory.fsPath)) {
+        return vscode.Uri.joinPath(dailyNoteDirectory, dailyNoteFilename);
+    } else {
+        return vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri,
+            dailyNoteDirectory.fsPath, dailyNoteFilename);
+    }
+}
+
+function getMeetingUri(dateString: string, meetingName: string): vscode.Uri {
+    let meetingNameFileFriendly = meetingName.split(' ').join('-');
+    const meetingNoteDirectory = vscode.Uri.file(getVsCodeConfig<string>('createMeeting.directory', '.'));
+    const meetingNoteFilename = dateString + '-' + meetingNameFileFriendly + '.md';
+    if (path.posix.isAbsolute(meetingNoteDirectory.fsPath)) {
+        return vscode.Uri.joinPath(meetingNoteDirectory, meetingNoteFilename);
+    } else {
+        return vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri,
+            meetingNoteDirectory.fsPath, meetingNoteFilename);
+    }
 }
 
 // this method is called when your extension is activated
@@ -38,10 +58,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('markdown-log-utils.createMeeting', async () => {
         let meetingName = await vscode.window.showInputBox({ title: 'Meeting name' });
         if (meetingName) {
-            let meetingNameFileFriendly = meetingName.split(' ').join('-');
             let edit = new vscode.WorkspaceEdit();
             let dateString = getCurrentDateString();
-            let uri = vscode.Uri.file(vscode.workspace.workspaceFolders![0].uri.fsPath + '/meetings/' + dateString + '-' + meetingNameFileFriendly + '.md');
+            let uri = getMeetingUri(dateString, meetingName);
             edit.createFile(uri, { ignoreIfExists: true });
             let created = await vscode.workspace.applyEdit(edit);
             if (created) {
@@ -59,8 +78,9 @@ export function activate(context: vscode.ExtensionContext) {
                 let dailyDoc = await vscode.workspace.openTextDocument(dailyUri);
                 let dailyEditor = await vscode.window.showTextDocument(dailyDoc, undefined, true);
                 let relPath = path.relative(path.dirname(dailyUri.fsPath), uri.fsPath);
-                if (path.sep === '\\')
+                if (path.sep === '\\') {
                     relPath = relPath.split(path.sep).join('/');
+                }
                 let refToMeeting = '[' + meetingName + '](' + relPath + ')\n';
                 dailyEditor.edit(editBuilder => {
                     editBuilder.replace(dailyEditor.selection, refToMeeting);
